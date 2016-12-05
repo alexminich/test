@@ -1,0 +1,68 @@
+body{
+  margin: 0;
+}
+@font-face {
+  font-family: Dancing;
+  src: url(fonts/DancingScript-Regular.otf);
+}
+header {
+  background-color: #4F4F4F;
+  height: 100%;
+  text-align: justify;
+  padding-left: 10%;
+  padding-right: 10%;
+  margin: none;
+}
+
+header h1, header nav, .search{
+  display: inline-block;
+  vertical-align: middle;
+}
+header h1{
+  color: #EEE9E9;
+  margin-left: 7%;
+  margin-right: 17%;
+  font-family: Dancing, 'Comic Sans MS', cursive;;
+}
+
+header nav a:link {
+  color: #FFFAFA;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-right:  4%;
+
+}
+header nav a:hover {
+  background: #363636;
+  color: #ffe;
+}
+
+.search{
+  width: 18%;
+  position: relative;
+}
+.search .input{
+  padding: 8px 5px 9px 30px;
+  width: 100%;
+  border-radius: 15px;
+  background: #363636;
+  color: white;
+  outline: none;
+  border: none;
+}
+.search .submit{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 30px;
+  height: 100%;
+  cursor: pointer;
+  background: url(img/go.png) 50% no-repeat;
+  opacity: 0.7;
+  border: none;
+  outline: none;
+}
+.search .submit:hover{
+  opacity: 1;
+}
