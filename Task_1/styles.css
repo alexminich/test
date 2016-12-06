@@ -1,5 +1,6 @@
 body{
-  margin: 0;
+  margin: 0 ;
+  background-color: #EEEED1;
 }
 @font-face {
   font-family: Dancing;
@@ -20,7 +21,6 @@ header h1, header nav, .search{
 }
 header h1{
   color: #EEE9E9;
-  margin-left: 7%;
   margin-right: 17%;
   font-family: Dancing, 'Comic Sans MS', cursive;;
 }
@@ -30,17 +30,22 @@ header nav a:link {
   padding: 8px;
   text-decoration: none;
   border-radius: 4px;
-  margin-right:  4%;
+  margin: 0 2%;
+  font-family: 'Trebuchet MS', 'Georgia';
 
 }
 header nav a:hover {
   background: #363636;
   color: #ffe;
 }
+header nav a:visited{
+  color: #FFFAFA;
+}
 
 .search{
   width: 18%;
   position: relative;
+  margin-left: 2%;
 }
 .search .input{
   padding: 8px 5px 9px 30px;
@@ -65,4 +70,92 @@ header nav a:hover {
 }
 .search .submit:hover{
   opacity: 1;
+}
+
+hr{
+  border: 0;
+  border-bottom: 3px dashed #ccc;
+  background: #999;
+  margin-bottom: 3%;
+}
+.centerLayer{
+margin: 2% 10%;
+}
+.centerLayer p{
+  font-size: 120%;
+  font-family: 'Trebuchet MS';
+  font-weight: 900;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.centerLayer nav a:link{
+  text-decoration: none;
+  color: #1C1C1C;
+  font-family: 'Helvetica', 'Trebuchet MS';
+  font-weight: 600;
+  margin: 0 1.2em;
+}
+.centerLayer nav a:link:first-child{
+  margin-left: 0;
+}
+.centerLayer nav a:visited{
+  color: #1C1C1C;
+}
+.centerLayer nav a:active{
+  color: #9C9C9C;
+}
+.centerLayer nav a:hover{
+  color: #9C9C9C;
+}
+.images{
+  margin-top: 3%;
+  margin-bottom: 3%;
+}
+#showPic{
+  opacity: 0.4;
+  cursor: pointer;
+  position: relative;
+  border-radius: 20px;
+  top: 30px;
+  left: 50px;
+}
+#showPic:hover{
+  opacity: 0.65;
+}
+.pic1{
+  height: 200px;
+  width: 200px;
+  background: url(img/pic1.jpg);
+}
+.mask1{
+  display: none;
+}
+.pic1Links{
+  height: 95px;
+  width: 200px;
+}
+.pic1:hover .mask1{
+  display: block;
+  box-shadow:0 0 0 100px rgba(0, 0, 0, 0.33) inset;
+}
+
+.pic1:hover .pic1Links a:link{
+  margin-left: 7px;
+  margin-right: 5px;
+  position: relative;
+  top: 50px;
+  display: inline-block;
+  text-decoration: none;
+  color: white;
+  text-align: left;
+  font-size: 80%;
+}
+.pic1Links a:visited{
+  color: white;
+}
+.pic1Links a:active{
+  color: gray;
+}
+.pic1Links a:hover{
+  color: #CFCFCF;
 }
