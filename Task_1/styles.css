@@ -1,4 +1,5 @@
 body{
+  height: 100%;
   margin: 0 ;
   background-color: #EEEED1;
 }
@@ -22,7 +23,7 @@ header h1, header nav, .search{
 header h1{
   color: #EEE9E9;
   margin-right: 17%;
-  font-family: Dancing, 'Comic Sans MS', cursive;;
+  font-family: Dancing, 'Comic Sans MS', cursive;
 }
 
 header nav a:link {
@@ -79,7 +80,7 @@ hr{
   margin-bottom: 3%;
 }
 .centerLayer{
-margin: 2% 10%;
+  margin: 2% 10%;
 }
 .centerLayer p{
   font-size: 120%;
@@ -101,15 +102,14 @@ margin: 2% 10%;
 .centerLayer nav a:visited{
   color: #1C1C1C;
 }
-.centerLayer nav a:active{
-  color: #9C9C9C;
-}
 .centerLayer nav a:hover{
   color: #9C9C9C;
 }
+.centerLayer nav a:active{
+  color: #9C9C9C;
+}
 .images{
-  margin-top: 3%;
-  margin-bottom: 3%;
+  margin: 5% auto;
 }
 #showPic{
   opacity: 0.4;
@@ -122,19 +122,28 @@ margin: 2% 10%;
 #showPic:hover{
   opacity: 0.65;
 }
+.image1{
+  height: 230px;
+  width: 200px;
+}
 .pic1{
   height: 200px;
   width: 200px;
-  background: url(img/pic1.jpg);
+  background: url(img/pic1.jpg) no-repeat;
 }
 .mask1{
+  height: 200px;
+  width: 200px;
+  /*opacity: 0;*/
   display: none;
+  margin-bottom: 5%;
 }
 .pic1Links{
   height: 95px;
   width: 200px;
 }
 .pic1:hover .mask1{
+  /*opacity: 1;*/
   display: block;
   box-shadow:0 0 0 100px rgba(0, 0, 0, 0.33) inset;
 }
@@ -148,14 +157,85 @@ margin: 2% 10%;
   text-decoration: none;
   color: white;
   text-align: left;
-  font-size: 80%;
+  font-size: 95%;
+  font-weight: bold;
+  font-family: 'Trebuchet MS';
 }
 .pic1Links a:visited{
   color: white;
 }
+.pic1Links a:hover{
+  color: #CFCFCF;
+}
 .pic1Links a:active{
   color: gray;
 }
-.pic1Links a:hover{
-  color: #CFCFCF;
+.images p{
+  font-size: 110%;
+  font-family: 'Trebuchet MS';
+  font-weight: 900;
+  margin-top: 10%;
+}
+
+footer{
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+.footerBlocks{
+  padding: 0 10%;
+  background-color:  #363636;
+  height: 40%;
+}
+.block{
+  width: 19.8%;
+  margin: 1% 3.2%;
+  display: inline-block;
+  vertical-align: top;
+}
+.block:first-child{
+  margin-left: 0;
+}
+.block:last-child{
+  margin-right: 0;
+  float: right;
+}
+h2{
+  color: #EEE9E9;
+  font-family: 'Trebuchet MS';
+  font-size: 120%;
+}
+.block p{
+  color: #EEE9E9;
+  font-family: 'Trebuchet MS';
+  font-size: 90%;
+  text-align: left;
+}
+footer hr{
+  border: 0;
+  border-top: 1px solid #696969;
+  border-bottom: 1px solid #696969;
+  margin-bottom: 8%;
+}
+.footerBottom{
+  padding: 0 10%;
+  background-color:  #1C1C1C;
+  height: 10%;
+}
+footer h1{
+  color: #CDAA7D;
+  margin-right: 3%;
+  font-family: Dancing, 'Comic Sans MS', cursive;
+}
+.footerBottom p{
+  color: #CDAA7D;
+}
+.footerBottom h1, .footerBottom p, .copyright{
+  display: inline-block;
+}
+.vertLine{
+  margin-right: 3%;
+}
+.copyright{
+  float: right;
 }
