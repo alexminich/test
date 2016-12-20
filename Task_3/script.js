@@ -40,3 +40,11 @@ function myAttr(attrName, value) {
       }
     }
 }
+
+function myChildren() {
+  var a = document.getElementsByTagName('div')
+  var elementChildren = a[0].children;
+  for (var i = 0; i < elementChildren.length; i++) {
+    elementChildren[i].append('  -I\'m child №' + (i + 1));
+  }
+}
