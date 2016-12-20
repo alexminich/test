@@ -2,3 +2,11 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.start{
+  background-color: yellow;
+}
+
+.bigFont{
+  font-size: 200%;
+}
