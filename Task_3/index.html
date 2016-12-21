@@ -10,30 +10,33 @@
 
 <body>
     <div>
-        <p class="bigFont">Text 1</p>
-        <p class="start" title="second text | ">text 2</p>
+        <p class="bigFont" id="ww">Text 1</p>
+        <p class="start" title="you can change it | ">text 2</p>
         <p class="start"> Implement minimal version of JQuery using interface's properties of Document Object Model.</p>
     </div>
 
-    <button onclick="myAppend(content)">Add some shit</button>
+    <button onclick="zzAppend(content)">Add some shit</button>
     <br><br>
-    <button onclick="myAddClass(clName)">Make it big</button>
+    <button onclick="zzAddClass(clName)">Make it big</button>
     <br><br>
-    <button onclick="myHtml(content)">Add using html</button>
+    <button onclick="zzHtml(content)">Add using html</button>
     <br><br>
-    <button onclick="myHtml()">View html</button>
+    <button onclick="zzHtml()">View html</button>
     <br><br>
-    <button onclick="myAttr(attrName)">Show Title Attribute </button>
+    <button onclick="zzAttr(attrName)">Show Title Attribute </button>
     <br><br>
-    <button onclick="myAttr(attrName, value)">Change Title Attribute</button>
+    <button onclick="zzAttr(attrName, value)">Change Title Attribute</button>
     <br><br>
-    <button onclick="myChildren()">Children</button>
+    <button onclick="zzChildren()">Children</button>
     <br><br>
-    <button onclick="myCss(styleName, styleValue)">Change background</button>
+    <button onclick="zzCss(styleName, styleValue)">Change background</button>
     <br><br>
-    <button onclick="myCss()">View style in console</button>
+    <button onclick="zzCss(styleName)">View background color</button>
+    <br><br><br><br>
+    <p>chaining callback: </p>
+    <button onclick="zzAddAndBigFont(content, clName)">Add text and make it big</button>
 
-
+    <script src="myLibrary.js"></script>
     <script src="script.js"></script>
 </body>
 
