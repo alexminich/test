@@ -1,16 +1,12 @@
 'use strict';
 
 
-// function createList() {
-//   var list = new List();
-//   console.dir(list);
-// }
-
 function makeSmth() {
-  var list = new List();
-  list.add(1);
-  list.add('два');
-  list.add(3);
-  list.addAsFirst('новый первый');
-  console.dir(list);
+    var list = new List();
+    list.add(2);
+    list.add('три');
+    list.add(4);
+    list.addAsFirst('первый');
+    list.delete(2);
+    console.dir(list);
 }
