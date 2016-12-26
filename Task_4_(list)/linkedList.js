@@ -32,6 +32,7 @@ List.prototype.add = function(data) {
     }
     this.end.data = data;
     this.length++;
+    return this;
 }
 
 
@@ -51,6 +52,7 @@ List.prototype.addAsFirst = function(data) {
     }
     this.start.data = data;
     this.length++;
+    return this;
 }
 
 
@@ -84,4 +86,5 @@ List.prototype.delete = function(data) {
         }
         element = element.next;
     }
+    return this;
 }
