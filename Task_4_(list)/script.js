@@ -5,6 +5,7 @@ var figures = new List();
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
+
 function Square(color, size) {
     this.color = color;
     this.size = size;
@@ -12,6 +13,7 @@ function Square(color, size) {
 Square.prototype.toString = function() {
     return ('square: ' + this.color + this.size);
 }
+
 
 function Circle(color, size) {
     this.color = color;
@@ -21,37 +23,89 @@ Circle.prototype.toString = function() {
     return ('circle: ' + this.color + this.size);
 }
 
+
 function addSquare() {
     var color = prompt('Color?', 'blue');
     var size = prompt('Size?', 100);
+
+    if (isNaN(size)) {
+        alert('Введите число.');
+        return;
+    }
+    if (size <= 1 || size > 1300) {
+        alert('Размер может быть от 1 до 1300');
+        return;
+    }
+
     var a = new Square(color, +size);
     figures.add(a);
     drawList();
 }
+
 
 function addCircle() {
     var color = prompt('Color?', 'blue');
     var size = prompt('Size?', 100);
+
+    if (isNaN(size)) {
+        alert('Введите число.');
+        return;
+    }
+    if (size <= 1 || size > 1300) {
+        alert('Размер может быть от 1 до 1300');
+        return;
+    }
+
     var a = new Circle(color, +size);
     figures.add(a);
     drawList();
 }
 
+
 function deleteSquare() {
     var color = prompt('Color?', 'blue');
     var size = prompt('Size?', 100);
+
+    if (isNaN(size)) {
+        alert('Введите число.');
+        return;
+    }
+    if (size <= 1 || size > 1300) {
+        alert('Размер может быть от 1 до 1300');
+        return;
+    }
+
     var a = new Square(color, +size);
-    figures.delete(a);
+    figures.deleteByContext(a);
     drawList();
 }
+
 
 function deleteCircle() {
     var color = prompt('Color?', 'blue');
     var size = prompt('Size?', 100);
+
+    if (isNaN(size)) {
+        alert('Введите число.');
+        return;
+    }
+    if (size <= 1 || size > 1300) {
+        alert('Размер может быть от 1 до 1300');
+        return;
+    }
+
     var a = new Circle(color, +size);
-    figures.delete(a);
+    figures.deleteByContext(a);
     drawList();
 }
+
+
+function del() {
+    var position = prompt('Position № ', 1);
+    figures.delete(position);
+    drawList();
+}
+
 
 // рисование списка
 function drawList() {
