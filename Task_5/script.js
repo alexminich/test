@@ -1,12 +1,14 @@
 'use strict';
 
+
+
 function request() {
     var xhr = new XMLHttpRequest();
 
     var params = 'part=' + encodeURIComponent('snippet') +
         '&key=' + encodeURIComponent("AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ") +
         '&maxResults=' + encodeURIComponent(2) +
-        '&q=' + encodeURIComponent('dog') +
+        '&q=' + encodeURIComponent('cat') +
         '&type=' + encodeURIComponent('video');
 
     xhr.open('GET', 'https://www.googleapis.com/youtube/v3/search?' + params, true);
