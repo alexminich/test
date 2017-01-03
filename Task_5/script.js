@@ -13,7 +13,7 @@ function doRequest(request) {
 
     var params = 'part=' + encodeURIComponent('snippet') +
         '&key=' + encodeURIComponent("AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ") +
-        '&maxResults=' + encodeURIComponent(5) +
+        '&maxResults=' + encodeURIComponent(15) +
         '&q=' + encodeURIComponent(request) +
         '&type=' + encodeURIComponent('video');
 
@@ -37,26 +37,35 @@ function createList(resp) {
     }
 
     var response = JSON.parse(resp);
+    console.log(response);
 
     var wrap = document.createElement('div');
     wrap.className = "wrap";
     var list = document.createElement('div');
     list.className = "resultList";
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 15; i++) {
         let elem = document.createElement('div'); // block creation
         elem.className = "resultElem";
 
-        let title = '<br>' + response.items[i].snippet.title; // video title creation
+        let link = document.createElement('a'); // youtube link creation
+        link.className = "link";
+        link.href = "https://youtube.com/watch?v=" + response.items[i].id.videoId;
+        link.target = "_blank";
 
-        let thumbnail = response.items[i].snippet.thumbnails.medium; // thumbnail creation
-        let image = document.createElement('img');
-        image.className = "thumbnail";
-        image.src = thumbnail.url;
-        image.alt = "Prewiew";
+        let title = document.createElement('h4'); // video title creation
+        title.className = "title";
+        title.innerHTML = response.items[i].snippet.title;
 
-        elem.appendChild(image);
-        elem.innerHTML += title;
+        let thumbnail = document.createElement('img'); // thumbnail creation
+        thumbnail.className = "thumbnail";
+        thumbnail.src = response.items[i].snippet.thumbnails.medium.url;
+        thumbnail.alt = "Prewiew";
+
+        link.appendChild(thumbnail);
+        link.appendChild(title);
+
+        elem.appendChild(link);
         list.appendChild(elem);
     }
 

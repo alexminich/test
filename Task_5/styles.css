@@ -56,12 +56,12 @@ form button:hover {
 }
 
 .resultList {
-    width: 10000px;
     background-color: #fdf9f0;
     display: inline-flex;
     justify-content: space-between;
     align-items: stretch;
     overflow-x: scroll;
+    margin: auto;
 }
 
 .resultElem {
