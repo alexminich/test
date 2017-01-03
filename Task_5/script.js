@@ -44,13 +44,22 @@ function createList(resp) {
     list.className = "resultList";
 
     for (var i = 0; i < 5; i++) {
-        let elem = document.createElement('div');
+        let elem = document.createElement('div'); // block creation
         elem.className = "resultElem";
-        let title = response.items[i].snippet.title;
-        elem.innerHTML = title;
+
+        let title = '<br>' + response.items[i].snippet.title; // video title creation
+
+        let thumbnail = response.items[i].snippet.thumbnails.medium; // thumbnail creation
+        let image = document.createElement('img');
+        image.className = "thumbnail";
+        image.src = thumbnail.url;
+        image.alt = "Prewiew";
+
+        elem.appendChild(image);
+        elem.innerHTML += title;
         list.appendChild(elem);
     }
-    
+
     wrap.appendChild(list);
     document.body.appendChild(wrap);
 }
