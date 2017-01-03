@@ -76,4 +76,9 @@ form button:hover {
 .thumbnail {
     margin: 10px auto;
     width: 100%;
+    border-radius: 15px;
+}
+
+.linkBlock:hover {
+  background-color: #faf0da;
 }

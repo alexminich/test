@@ -62,8 +62,13 @@ function createList(resp) {
         thumbnail.src = response.items[i].snippet.thumbnails.medium.url;
         thumbnail.alt = "Prewiew";
 
-        link.appendChild(thumbnail);
-        link.appendChild(title);
+        let linkBlock = document.createElement('div');
+        linkBlock.className = "linkBlock";
+
+
+        linkBlock.appendChild(thumbnail);
+        linkBlock.appendChild(title);
+        link.appendChild(linkBlock);
 
         elem.appendChild(link);
         list.appendChild(elem);
