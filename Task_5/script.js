@@ -1,15 +1,14 @@
 'use strict';
 
 
-
-function doSearch () {
-  var form = document.forms.search;
-  var searchRequest = form.elements.searchRequest.value;
-  request(searchRequest);
+function doSearch() {
+    var form = document.forms.search;
+    var searchRequest = form.elements.searchRequest.value;
+    doRequest(searchRequest);
 }
 
 
-function request(request) {
+function doRequest(request) {
     var xhr = new XMLHttpRequest();
 
     var params = 'part=' + encodeURIComponent('snippet') +
@@ -29,4 +28,19 @@ function request(request) {
     }
 
     xhr.send();
+}
+
+
+function createList() {
+    var wrap = document.createElement('div');
+    wrap.className = "wrap";
+    var list = document.createElement('div');
+    list.className = "resultList";
+    for (var i = 0; i < 5; i++) {
+        let elem = document.createElement('div');
+        elem.className = "resultElem";
+        list.appendChild(elem);
+    }
+    wrap.appendChild(list);
+    document.body.appendChild(wrap);
 }
