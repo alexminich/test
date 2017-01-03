@@ -13,14 +13,14 @@ function doRequest(request) {
 
     var params = 'part=' + encodeURIComponent('snippet') +
         '&key=' + encodeURIComponent("AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ") +
-        '&maxResults=' + encodeURIComponent(2) +
+        '&maxResults=' + encodeURIComponent(5) +
         '&q=' + encodeURIComponent(request) +
         '&type=' + encodeURIComponent('video');
 
     xhr.open('GET', 'https://www.googleapis.com/youtube/v3/search?' + params, true);
 
     xhr.onload = function() {
-        alert(this.responseText);
+        createList(this.responseText);
     }
 
     xhr.onerror = function() {
@@ -31,16 +31,26 @@ function doRequest(request) {
 }
 
 
-function createList() {
+function createList(resp) {
+    if (document.body.contains(document.getElementsByClassName('wrap')[0])) {
+        document.body.removeChild(document.getElementsByClassName('wrap')[0]);
+    }
+
+    var response = JSON.parse(resp);
+
     var wrap = document.createElement('div');
     wrap.className = "wrap";
     var list = document.createElement('div');
     list.className = "resultList";
+
     for (var i = 0; i < 5; i++) {
         let elem = document.createElement('div');
         elem.className = "resultElem";
+        let title = response.items[i].snippet.title;
+        elem.innerHTML = title;
         list.appendChild(elem);
     }
+    
     wrap.appendChild(list);
     document.body.appendChild(wrap);
 }
