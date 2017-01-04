@@ -50,7 +50,6 @@ form button:hover {
 }
 
 .wrap {
-    width: 85%;
     display: flex;
     margin: 20px auto;
 }
@@ -80,5 +79,37 @@ form button:hover {
 }
 
 .linkBlock:hover {
-  background-color: #faf0da;
+    background-color: #faf0da;
+}
+
+.linkBlock:hover .thumbnail {
+    opacity: 0.7;
+}
+
+.leftButton:before {
+    content: "\f053";
+    font-family: FontAwesome;
+    color: #be290e;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.rightButton:before {
+    content: "\f054";
+    font-family: FontAwesome;
+    color: #be290e;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.leftButton, .rightButton {
+    outline: none;
+    background-color: #F9F0DA;
+    border-radius: 15px;
+    border-width: 0;
+}
+
+.leftButton:hover, .rightButton:hover {
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+    background-color: #fcf9f0;
 }

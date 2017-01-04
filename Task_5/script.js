@@ -44,8 +44,20 @@ function createList(resp) {
     var list = document.createElement('div');
     list.className = "resultList";
 
+    // кнопки лево\право
+    var leftButton = document.createElement('button');
+    var rightButton = document.createElement('button');
+    leftButton.className = "leftButton";
+    rightButton.className = "rightButton";
+    leftButton.onclick = function() {
+        list.scrollLeft -= list.clientWidth;
+    };
+    rightButton.onclick = function() {
+        list.scrollLeft += list.clientWidth;
+    };
+
     for (var i = 0; i < 15; i++) {
-        let elem = document.createElement('div'); // block creation
+        let elem = document.createElement('div'); // element block creation
         elem.className = "resultElem";
 
         let link = document.createElement('a'); // youtube link creation
@@ -62,7 +74,7 @@ function createList(resp) {
         thumbnail.src = response.items[i].snippet.thumbnails.medium.url;
         thumbnail.alt = "Prewiew";
 
-        let linkBlock = document.createElement('div');
+        let linkBlock = document.createElement('div'); // link Block creation
         linkBlock.className = "linkBlock";
 
 
@@ -74,6 +86,16 @@ function createList(resp) {
         list.appendChild(elem);
     }
 
+    wrap.appendChild(leftButton);
     wrap.appendChild(list);
+    wrap.appendChild(rightButton);
     document.body.appendChild(wrap);
+
+
+    //задать начальный размер wrap
+    let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth + 10;
+    let countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
+    console.log(countVisibleElements);
+    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
+    wrap.style.width = wrapWidth + 'px';
 }
