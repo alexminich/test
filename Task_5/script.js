@@ -190,12 +190,25 @@ function appendItems(response) {
         let linkBlock = document.createElement('div'); // link Block creation
         linkBlock.className = "linkBlock";
 
+        let description = document.createElement('div'); // description and date creation
+        var date = new Date(response.items[i].snippet.publishedAt);
+        var options = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric'
+        }
+        description.className = "description";
+        description.innerHTML = response.items[i].snippet.description + '<br><br>' + '<b>опубликовано:</b> ' + date.toLocaleString("ru", options);
 
         linkBlock.appendChild(thumbnail);
         linkBlock.appendChild(title);
         link.appendChild(linkBlock);
 
         elem.appendChild(link);
+        elem.appendChild(description);
         list.appendChild(elem);
         itemsCount++;
     }
