@@ -1,34 +1,76 @@
 'use strict';
 
 
+var nextPageToken = 0;
+var request = "";
+var itemsCount = 0;
+var list;
 
 function doSearch() {
+    nextPageToken = 0;
     var form = document.forms.search;
     var searchRequest = form.elements.searchRequest.value;
-    doRequest(searchRequest);
+    request = searchRequest;
+    doRequest(request);
+    //  createList(doRequest(searchRequest));
+
+    // console.log(a);
+    // var a = doRequest(searchRequest);
+    // console.log(a);
+    // createList(a);
 }
 
 
 function doRequest(request) {
     var xhr = new XMLHttpRequest();
 
-    var params = 'part=' + encodeURIComponent('snippet') +
-        '&key=' + encodeURIComponent("AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ") +
-        '&maxResults=' + encodeURIComponent(15) +
-        '&q=' + encodeURIComponent(request) +
-        '&type=' + encodeURIComponent('video');
+
+    var params = 'part=' + 'snippet' +
+        '&key=' + "AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ" +
+        '&maxResults=' + 15 +
+        '&q=' + request +
+        '&type=' + 'video';
 
     xhr.open('GET', 'https://www.googleapis.com/youtube/v3/search?' + params, true);
 
+    xhr.send();
+
     xhr.onload = function() {
         createList(this.responseText);
+        // return this.responseText;
     }
 
     xhr.onerror = function() {
         alert('ошибка ' + this.status);
+        return 0;
     }
 
-    xhr.send();
+    // xhr.onreadystatechange = function() {
+    //   if (this.readyState != 4) return;
+    //
+    //   if (this.status != 200) {
+    //     // обработать ошибку
+    //     alert( 'ошибка: ' + (this.status ? this.statusText : 'запрос не удался') );
+    //     return;
+    //   }
+    //   var a = this.responseText;
+    //   return a;
+
+    // var timerId = setInterval(function() {
+    //   xhr.onload = function() {
+    //       var a = this.responseText;
+    //       return a;
+    //       clearInterval(timerId);
+    //     }
+    //
+    //     xhr.onerror = function() {
+    //       alert('ошибка ' + this.status);
+    //       return 0;
+    //     }
+    // }, 200);
+
+
+    // }
 }
 
 
@@ -39,10 +81,11 @@ function createList(resp) {
 
     var response = JSON.parse(resp);
     console.log(response);
+    nextPageToken = response.nextPageToken;
 
     var wrap = document.createElement('div');
     wrap.className = "wrap";
-    var list = document.createElement('div');
+    list = document.createElement('div');
     list.className = "resultList";
 
     // кнопки лево\право
@@ -50,7 +93,6 @@ function createList(resp) {
     var rightButton = document.createElement('button');
     leftButton.className = "leftButton";
     rightButton.className = "rightButton";
-    // leftButton.onclick = scrollLeft.bind(leftButton, list);
     leftButton.onclick = function() {
         scrollLeft(list)
     };
@@ -58,6 +100,75 @@ function createList(resp) {
         scrollRight(list)
     };
 
+    appendItems(response);
+
+    wrap.appendChild(leftButton);
+    wrap.appendChild(list);
+    wrap.appendChild(rightButton);
+    document.body.appendChild(wrap);
+
+    //задать начальный размер wrap
+    resize(wrap, leftButton, rightButton);
+
+    window.onresize = function() {
+        resize(wrap, leftButton, rightButton)
+    };
+    return list;
+}
+
+
+function scrollLeft(list) {
+    list.scrollLeft -= list.clientWidth;
+}
+
+
+function scrollRight(list) {
+    list.scrollLeft += list.clientWidth;
+}
+
+
+function resize(wrap, leftButton, rightButton, previousWidth) {
+    wrap.style.width = document.documentElement.clientWidth + 'px';
+    let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth + 10;
+    let countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
+    console.log(countVisibleElements);
+    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
+    wrap.style.width = wrapWidth + 'px';
+}
+
+// подгрузка элементов
+function loadItems() {
+    if (nextPageToken === 0) {
+        return
+    };
+
+    var xhr = new XMLHttpRequest();
+
+    var params = 'part=' + 'snippet' +
+        '&key=' + "AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ" +
+        '&maxResults=' + 15 +
+        '&q=' + request +
+        '&type=' + 'video' +
+        '&pageToken=' + nextPageToken;
+
+    xhr.open('GET', 'https://www.googleapis.com/youtube/v3/search?' + params, true);
+
+    xhr.send();
+
+    xhr.onload = function() {
+        var response = JSON.parse(this.responseText);
+        nextPageToken = response.nextPageToken;
+        appendItems(response);
+        // return this.responseText;
+    }
+
+    xhr.onerror = function() {
+        alert('ошибка ' + this.status);
+        return 0;
+    }
+}
+
+function appendItems(response) {
     for (var i = 0; i < 15; i++) {
         let elem = document.createElement('div'); // element block creation
         elem.className = "resultElem";
@@ -86,37 +197,6 @@ function createList(resp) {
 
         elem.appendChild(link);
         list.appendChild(elem);
+        itemsCount++;
     }
-
-    wrap.appendChild(leftButton);
-    wrap.appendChild(list);
-    wrap.appendChild(rightButton);
-    document.body.appendChild(wrap);
-
-    //задать начальный размер wrap
-    resize(wrap, leftButton, rightButton);
-
-    window.onresize = function() {
-        resize(wrap, leftButton, rightButton)
-    };
-}
-
-
-function scrollLeft(list) {
-    list.scrollLeft -= list.clientWidth;
-};
-
-
-function scrollRight(list) {
-    list.scrollLeft += list.clientWidth;
-}
-
-
-function resize(wrap, leftButton, rightButton, previousWidth) {
-    wrap.style.width = document.documentElement.clientWidth + 'px';
-    let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth + 10;
-    let countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
-    console.log(countVisibleElements);
-    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
-    wrap.style.width = wrapWidth + 'px';
 }
