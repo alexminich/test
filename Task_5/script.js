@@ -1,6 +1,7 @@
 'use strict';
 
 
+
 function doSearch() {
     var form = document.forms.search;
     var searchRequest = form.elements.searchRequest.value;
@@ -49,11 +50,12 @@ function createList(resp) {
     var rightButton = document.createElement('button');
     leftButton.className = "leftButton";
     rightButton.className = "rightButton";
+    // leftButton.onclick = scrollLeft.bind(leftButton, list);
     leftButton.onclick = function() {
-        list.scrollLeft -= list.clientWidth;
+        scrollLeft(list)
     };
     rightButton.onclick = function() {
-        list.scrollLeft += list.clientWidth;
+        scrollRight(list)
     };
 
     for (var i = 0; i < 15; i++) {
@@ -91,8 +93,27 @@ function createList(resp) {
     wrap.appendChild(rightButton);
     document.body.appendChild(wrap);
 
-
     //задать начальный размер wrap
+    resize(wrap, leftButton, rightButton);
+
+    window.onresize = function() {
+        resize(wrap, leftButton, rightButton)
+    };
+}
+
+
+function scrollLeft(list) {
+    list.scrollLeft -= list.clientWidth;
+};
+
+
+function scrollRight(list) {
+    list.scrollLeft += list.clientWidth;
+}
+
+
+function resize(wrap, leftButton, rightButton, previousWidth) {
+    wrap.style.width = document.documentElement.clientWidth + 'px';
     let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth + 10;
     let countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
     console.log(countVisibleElements);
