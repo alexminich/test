@@ -49,7 +49,6 @@ form button:hover {
     background: #ee3312;
 }
 
-
 .wrap {
     display: flex;
     margin: 20px auto;
@@ -60,7 +59,7 @@ form button:hover {
     display: inline-flex;
     justify-content: space-between;
     align-items: stretch;
-    overflow:  auto;
+    overflow: auto;
     margin: auto;
     z-index: 1;
 }
@@ -68,7 +67,7 @@ form button:hover {
 .resultElem {
     min-width: 250px;
     max-width: 300px;
-    height: 500px;
+    height: 520px;
     background-color: #F8F8FF;
     margin: 5px;
     text-align: center;
@@ -76,8 +75,9 @@ form button:hover {
 }
 
 .thumbnail {
-    margin: 10px auto;
+    margin: 10px 0 auto;
     width: 100%;
+    height: 141px;
     border-radius: 15px;
 }
 
@@ -90,14 +90,10 @@ form button:hover {
 }
 
 .leftButton:before {
-    content: "\f053";
-    font-family: FontAwesome;
-    color: #be290e;
-    font-size: 30px;
-    font-weight: bold;
+    content: "\f053" !important;
 }
 
-.rightButton:before {
+.rightButton:before, .leftButton:before {
     content: "\f054";
     font-family: FontAwesome;
     color: #be290e;
@@ -116,4 +112,12 @@ form button:hover {
 .leftButton:hover, .rightButton:hover {
     text-shadow: 1px 1px 2px black, 0 0 75px blue, 0 0 5px darkblue;
     background-color: #fcf9f0;
+}
+
+.fa-thumbs-up {
+    color: green;
+}
+
+.fa-thumbs-down {
+    color: red;
 }
