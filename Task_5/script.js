@@ -5,6 +5,7 @@ var nextPageToken = 0;
 var request = "";
 var itemsCount = 0;
 var list;
+var countVisibleElements;
 
 
 function doSearch() {
@@ -75,10 +76,10 @@ function createList(serverResponse) {
     leftButton.className = "leftButton";
     rightButton.className = "rightButton";
     leftButton.onclick = function() {
-        scrollLeft(list);
+        scrollLeft();
     };
     rightButton.onclick = function() {
-        scrollRight(list);
+        scrollRight();
     };
 
     appendItems(response);
@@ -98,73 +99,60 @@ function createList(serverResponse) {
 }
 
 
-function scrollLeft(list) {
-    list.scrollLeft -= list.clientWidth;
-}
-
-
-function scrollRight(list) {
-    list.scrollLeft += list.clientWidth;
-}
-
-
-function resize(wrap, leftButton, rightButton) {
-    wrap.style.width = document.documentElement.clientWidth + 'px';
-    let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth + 10;
-    let countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
-    console.log(countVisibleElements);
-    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
-    wrap.style.width = wrapWidth + 'px';
-}
-
 
 // добавляем видео в результаты поиска
 function appendItems(response) {
     for (var i = 0; i < 15; i++) {
-        let elem = document.createElement('div'); // element block creation
-        elem.className = "resultElem";
+        if (response.items[i] !== undefined) {
+            let elem = document.createElement('div'); // element block creation
+            elem.className = "resultElem";
 
-        let link = document.createElement('a'); // youtube link creation
-        link.className = "link";
-        link.href = "https://youtube.com/watch?v=" + response.items[i].id.videoId;
-        link.target = "_blank";
+            let link = document.createElement('a'); // youtube link creation
+            link.className = "link";
+            link.href = "https://youtube.com/watch?v=" + response.items[i].id.videoId;
+            link.target = "_blank";
 
-        let title = document.createElement('h4'); // video title creation
-        title.className = "title";
-        title.innerHTML = response.items[i].snippet.title;
+            let title = document.createElement('h4'); // video title creation
+            title.className = "title";
+            title.style.marginTop = 10;
+            title.innerHTML = response.items[i].snippet.title;
 
-        let thumbnail = document.createElement('img'); // thumbnail creation
-        thumbnail.className = "thumbnail";
-        thumbnail.src = response.items[i].snippet.thumbnails.medium.url;
-        thumbnail.alt = "Prewiew";
+            let thumbnail = document.createElement('img'); // thumbnail creation
+            thumbnail.className = "thumbnail";
+            thumbnail.src = response.items[i].snippet.thumbnails.medium.url;
+            thumbnail.alt = "Prewiew";
 
-        let linkBlock = document.createElement('div'); // link Block creation
-        linkBlock.className = "linkBlock";
+            let linkBlock = document.createElement('div'); // link Block creation
+            linkBlock.className = "linkBlock";
 
-        let channel = document.createElement('p'); // cahnnel title creation
-        channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b><br><br>';
+            let channel = document.createElement('p'); // cahnnel title creation
+            channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b><br><br>';
 
-        let description = document.createElement('div'); // description and date creation
-        var date = new Date(response.items[i].snippet.publishedAt);
-        description.className = "description";
-        description.innerHTML = response.items[i].snippet.description + '<br><br>' + '<b>опубликовано:</b> ' + date.toLocaleString("ru", {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        }) + '<br><br>';
+            let description = document.createElement('div'); // description and date creation
+            var date = new Date(response.items[i].snippet.publishedAt);
+            description.className = "description";
+            description.innerHTML = response.items[i].snippet.description + '<br><br>' + '<b>опубликовано:</b> ' + date.toLocaleString("ru", {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            }) + '<br><br>';
 
-        getStatistics(response.items[i].id.videoId, elem);
+            getStatistics(response.items[i].id.videoId, elem);
 
-        linkBlock.appendChild(thumbnail);
-        linkBlock.appendChild(title);
-        link.appendChild(linkBlock);
+            linkBlock.appendChild(thumbnail);
+            linkBlock.appendChild(title);
+            link.appendChild(linkBlock);
 
-        elem.appendChild(link);
-        elem.appendChild(channel);
-        elem.appendChild(description);
+            elem.appendChild(link);
+            elem.appendChild(channel);
+            elem.appendChild(description);
 
-        list.appendChild(elem);
-        itemsCount++;
+            list.appendChild(elem);
+            itemsCount++;
+        } else {
+            alert('End of search list reached');
+            return;
+        }
     }
 }
 
@@ -189,13 +177,22 @@ function getStatistics(videoId, elem) {
         likeIcon.className = "fa fa-thumbs-up";
         let dislikeIcon = document.createElement('i');
         dislikeIcon.className = "fa fa-thumbs-down";
+
         statistics.appendChild(watchesIcon);
         var formatter = new Intl.NumberFormat("ru");
         statistics.innerHTML += ' : <b>' + formatter.format(response.items[0].statistics.viewCount) + '</b><br>';
         statistics.appendChild(likeIcon);
-        statistics.innerHTML += formatter.format(response.items[0].statistics.likeCount) + ' ';
-        statistics.appendChild(dislikeIcon);
-        statistics.innerHTML += formatter.format(response.items[0].statistics.dislikeCount);
+
+        // проверка на отключенные лайки\дизлайки
+        if (response.items[0].statistics.likeCount === undefined) {
+            statistics.appendChild(dislikeIcon);
+            statistics.innerHTML += 'отключены :(';
+        } else {
+            statistics.innerHTML += formatter.format(response.items[0].statistics.likeCount) + ' ';
+            statistics.appendChild(dislikeIcon);
+            statistics.innerHTML += formatter.format(response.items[0].statistics.dislikeCount);
+        }
+
         elem.appendChild(statistics);
     }
 
@@ -205,4 +202,56 @@ function getStatistics(videoId, elem) {
     }
 
     xhr.send();
+}
+
+
+function scrollLeft() {
+    list.scrollLeft -= list.clientWidth;
+
+    // анимация скроллинга, глючит при частом листании
+    // var prevPage = list.scrollLeft - list.clientWidth;
+    // var animationLeft = setInterval(moveLeft, 1);
+    // function moveLeft() {
+    //   if(list.scrollLeft === prevPage){
+    //       clearInterval(animationLeft);
+    //   } else{
+    //       list.scrollLeft -= 10;
+    //   }
+    // }
+}
+
+
+function scrollRight() {
+    list.scrollLeft += list.clientWidth;
+
+    // анимация скроллинга, глючит при частом листании
+    // var nextPage = list.scrollLeft + list.clientWidth;
+    // var animationRight = setInterval(moveRight, 10);
+    //
+    // function moveRight() {
+    //   if(list.scrollLeft === nextPage){
+    //       clearInterval(animationRight);
+    //   } else{
+    //       list.scrollLeft += 10;
+    //   }
+    // }
+
+    // подгрузка новых роликов
+    // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
+    let elementWidth = 260;
+    let countLeftElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - document.getElementsByClassName('leftButton')[0].offsetWidth - document.getElementsByClassName('rightButton')[0].offsetWidth) / elementWidth;
+    if (countLeftElements < 10) {
+        doRequest(request);
+    }
+}
+
+
+function resize(wrap, leftButton, rightButton) {
+    wrap.style.width = document.documentElement.clientWidth + 'px';
+    // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
+    let elementWidth = 260;
+    countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
+    console.log(countVisibleElements);
+    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
+    wrap.style.width = wrapWidth + 'px';
 }

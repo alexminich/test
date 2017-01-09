@@ -55,21 +55,22 @@ form button:hover {
 }
 
 .resultList {
-    background-color: #fdf9f0;
+    /*background-color: #fdf9f0;*/
+    background-color: black;
     display: inline-flex;
     justify-content: space-between;
     align-items: stretch;
-    overflow: auto;
+    overflow: hidden;
     margin: auto;
     z-index: 1;
 }
 
 .resultElem {
     min-width: 250px;
-    max-width: 300px;
-    height: 520px;
+    max-width: 250px;
+    height: 540px;
     background-color: #F8F8FF;
-    margin: 5px;
+    padding: 5px;
     text-align: center;
     z-index: 1;
 }
@@ -106,7 +107,7 @@ form button:hover {
     background-color: #F9F0DA;
     border-radius: 15px;
     border-width: 0;
-    z-index: 2;
+    z-index: 3;
 }
 
 .leftButton:hover, .rightButton:hover {
