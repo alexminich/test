@@ -122,3 +122,12 @@ form button:hover {
 .fa-thumbs-down {
     color: red;
 }
+
+.pagination {
+    margin: 0 auto;
+    display: inline-block;
+}
+
+.pagination li {
+    display: inline;
+}

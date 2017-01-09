@@ -3,12 +3,17 @@
 
 var nextPageToken = 0;
 var request = "";
-var itemsCount = 0;
+var itemsCount = 0; // зачем?
 var list;
-var countVisibleElements;
+// var countVisibleElements;
+var currentPage;
+var buttonsWidth;
+var elementWidth = 260;
+var endFlag = 0;
 
 
 function doSearch() {
+    endFlag = 0;
     nextPageToken = 0;
     var form = document.forms.search;
     var searchRequest = form.elements.searchRequest.value;
@@ -18,6 +23,9 @@ function doSearch() {
 
 
 function doRequest(request) {
+    if (endFlag === 1) {
+        return 0;
+    }
     var xhr = new XMLHttpRequest();
 
     if (nextPageToken === 0) {
@@ -60,9 +68,24 @@ function createList(serverResponse) {
     if (document.body.contains(document.getElementsByClassName('wrap')[0])) {
         document.body.removeChild(document.getElementsByClassName('wrap')[0]);
     }
+    if (document.body.contains(document.getElementsByClassName('error')[0])) {
+        document.body.removeChild(document.getElementsByClassName('error')[0]);
+    }
+    if(document.body.contains(document.getElementsByClassName('pagination')[0])) {
+        document.body.removeChild(document.getElementsByClassName('pagination')[0]);
+    }
 
     var response = JSON.parse(serverResponse);
     console.log(response);
+
+    // если ничего не найдено
+    if(response.items.length === 0){
+      let error = document.createElement('span');
+      error.className = "error";
+      error.innerHTML = 'Ничего не найдено по данному запросу';
+      document.body.appendChild(error);
+      return 0;
+    }
     nextPageToken = response.nextPageToken;
 
     var wrap = document.createElement('div');
@@ -88,13 +111,33 @@ function createList(serverResponse) {
     wrap.appendChild(list);
     wrap.appendChild(rightButton);
     document.body.appendChild(wrap);
+    buttonsWidth = leftButton.offsetWidth + rightButton.offsetWidth;
+
+    // pagination
+    var pagination = document.createElement('ul');
+    pagination.className = "pagination";
+    var firstPage = document.createElement('li');
+    firstPage.className = "fa fa-square";
+    firstPage.classList.add("firstPage");
+    firstPage.classList.add("page");
+    firstPage.onclick = function (){
+        list.scrollLeft = 0;
+        currentPage = 1;
+        doPagination();
+        }
+
+    pagination.appendChild(firstPage);
+    document.body.appendChild(pagination);
+    currentPage = 1;
 
     //задать начальный размер wrap
-    resize(wrap, leftButton, rightButton);
+    resize(wrap);
 
     window.onresize = function() {
-        resize(wrap, leftButton, rightButton)
+        resize(wrap);
     };
+
+
     return list;
 }
 
@@ -150,7 +193,7 @@ function appendItems(response) {
             list.appendChild(elem);
             itemsCount++;
         } else {
-            alert('End of search list reached');
+            endFlag = 1;
             return;
         }
     }
@@ -206,7 +249,12 @@ function getStatistics(videoId, elem) {
 
 
 function scrollLeft() {
+    if (document.body.contains(document.getElementsByClassName('error')[0])) {
+        document.body.removeChild(document.getElementsByClassName('error')[0]);
+    }
+
     list.scrollLeft -= list.clientWidth;
+    doPagination();
 
     // анимация скроллинга, глючит при частом листании
     // var prevPage = list.scrollLeft - list.clientWidth;
@@ -222,7 +270,28 @@ function scrollLeft() {
 
 
 function scrollRight() {
+    if (document.body.contains(document.getElementsByClassName('error')[0])) {
+        document.body.removeChild(document.getElementsByClassName('error')[0]);
+    }
+
     list.scrollLeft += list.clientWidth;
+    doPagination();
+
+    if(list.scrollLeft === list.scrollWidth - list.clientWidth){
+        document.getElementsByClassName('page')[currentPage ].classList.remove("fa-square-o");
+        document.getElementsByClassName('page')[currentPage ].classList.add("fa-square");
+        document.getElementsByClassName('page')[currentPage - 1].classList.remove("fa-square");
+        document.getElementsByClassName('page')[currentPage - 1].classList.add("fa-square-o");
+        if(document.getElementsByClassName('miss2')[0]) {
+            document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss2')[0]);
+        }
+        var error = document.createElement('span');
+        error.className = "error";
+        error.innerHTML = '<br><br>Больше ничего не найдено!';
+        document.body.appendChild(error);
+        return;
+    }
+
 
     // анимация скроллинга, глючит при частом листании
     // var nextPage = list.scrollLeft + list.clientWidth;
@@ -238,20 +307,92 @@ function scrollRight() {
 
     // подгрузка новых роликов
     // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
-    let elementWidth = 260;
-    let countLeftElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - document.getElementsByClassName('leftButton')[0].offsetWidth - document.getElementsByClassName('rightButton')[0].offsetWidth) / elementWidth;
-    if (countLeftElements < 10) {
+    let countHiddenRightElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth;
+    if (countHiddenRightElements < 10) {
         doRequest(request);
     }
 }
 
 
-function resize(wrap, leftButton, rightButton) {
+function resize(wrap) {
     wrap.style.width = document.documentElement.clientWidth + 'px';
     // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
-    let elementWidth = 260;
-    countVisibleElements = Math.floor((wrap.clientWidth - leftButton.offsetWidth - rightButton.offsetWidth) / elementWidth);
-    console.log(countVisibleElements);
-    let wrapWidth = countVisibleElements * elementWidth + leftButton.offsetWidth + rightButton.offsetWidth;
+    let countVisibleElements = Math.floor((wrap.clientWidth - buttonsWidth) / elementWidth);
+    let wrapWidth = countVisibleElements * elementWidth + buttonsWidth;
     wrap.style.width = wrapWidth + 'px';
+    doPagination();
+}
+
+
+function doPagination() {
+  let countHiddenLeftElements = list.scrollLeft / elementWidth;
+  let countVisibleElements = Math.floor((document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth);
+  if(countVisibleElements === 0) {return}
+  currentPage = Math.ceil(countHiddenLeftElements / countVisibleElements) + 1;
+  console.log("visibleElements = " + countVisibleElements);
+  console.log("current page = " + currentPage);
+
+  if(!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])){
+      var miss2 = document.createElement('span');
+      miss2.className = "miss2";
+      miss2.innerHTML = "...";
+      document.getElementsByClassName("pagination")[0].appendChild(miss2);
+  }
+  var pages = document.getElementsByClassName('page');
+  for(var i = 0; i < pages.length; i++){
+      pages[i].style.display = '';
+  }
+  if(!pages[currentPage]) {
+    for(var i = pages.length; i < currentPage+1; i++){
+          var newPage = document.createElement('li');
+          newPage.className = "fa fa-square-o";
+          newPage.classList.add("page");
+          document.getElementsByClassName("pagination")[0].insertBefore(newPage, document.getElementsByClassName('miss2')[0]);
+    }
+  }
+  // pages = document.getElementsByClassName('page');
+  for(var i = 0; i < pages.length; i++){
+      if(pages[i].classList.contains("fa-square")) {
+          pages[i].classList.remove("fa-square");
+          pages[i].classList.add("fa-square-o");
+      }
+  }
+  console.log(pages);
+  pages[currentPage - 1].classList.remove("fa-square-o");
+  pages[currentPage - 1].classList.add("fa-square");
+
+// свертка при большом количестве страниц
+// в начале
+  if(pages.length > 10 && currentPage > 10) {
+      for(var i = 1; i < currentPage - 2; i++){
+          pages[i].style.display = 'none';
+      }
+      if(!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss1')[0])){
+          var miss1 = document.createElement('span');
+          miss1.className = "miss1";
+          miss1.innerHTML = "...";
+          document.getElementsByClassName('pagination')[0].insertBefore(miss1, document.getElementsByClassName('pagination')[0].childNodes[1]);
+      }
+  } else {
+      if (document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss1')[0])) {
+          document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss1')[0]);
+      }
+  }
+//  в конце
+  if(pages.length > currentPage + 1){
+      for(var i = currentPage + 1; i < pages.length; i++){
+          pages[i].style.display = 'none';
+      }
+  }
+  //     if(!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])){
+  //         var miss2 = document.createElement('span');
+  //         miss2.className = "miss2";
+  //         miss2.innerHTML = "...";
+  //         document.getElementsByClassName('pagination')[0].insertBefore(miss2, null);
+  //     }
+  // }else {
+  //     if (document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])) {
+  //         document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss2')[0]);
+  //       }
+  // }
 }
