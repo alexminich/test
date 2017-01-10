@@ -55,7 +55,7 @@ form button:hover {
 }
 
 .resultList {
-    /*background-color: #fdf9f0;*/
+    background-color: #fdf9f0;
     background-color: black;
     display: inline-flex;
     justify-content: space-between;
@@ -152,8 +152,34 @@ form button:hover {
     margin-left: -25px;
 }
 
-@media only screen and (max-width: 650px) {
-    form{
+@media only screen and (max-width: 525px) {
+    form {
         width: 300px;
+    }
+    .resultElem {
+        min-width: 170px;
+        max-width: 170px;
+        height: auto;
+    }
+    .thumbnail {
+        margin: 0 0 auto;
+    }
+    .title {
+        margin: 0 auto;
+    }
+    .channel {
+        margin: 5px auto;
+        background-color: #F5F5F5;
+    }
+}
+
+@media only screen and (max-width: 330px) {
+    form {
+        width: 170px;
+    }
+    .resultElem {
+        min-width: 120px;
+        max-width: 120px;
+        height: auto;
     }
 }

@@ -8,8 +8,10 @@ var list;
 // var countVisibleElements;
 var currentPage;
 var buttonsWidth;
-var elementWidth = 260;
+// var elementWidth = 260;
+// var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
 var endFlag = 0;
+var currentDocumentWidth = document.documentElement.clientWidth;
 
 
 function doSearch() {
@@ -163,18 +165,37 @@ function appendItems(response) {
             linkBlock.className = "linkBlock";
 
             let channel = document.createElement('p'); // cahnnel title creation
+            channel.className = "channel";
             channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b><br><br>';
 
             let description = document.createElement('div'); // description and date creation
             var date = new Date(response.items[i].snippet.publishedAt);
             description.className = "description";
-            description.innerHTML = response.items[i].snippet.description + '<br><br>' + '<b>опубликовано:</b> ' + date.toLocaleString("ru", {
+            description.innerHTML = response.items[i].snippet.description + '<br><br><b>опубликовано:</b> ' + date.toLocaleString("ru", {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric',
             }) + '<br><br>';
 
             getStatistics(response.items[i].id.videoId, elem);
+
+            //  breakpoint if < 525px
+            var mq = window.matchMedia("(max-width: 525px)");
+            if (mq.matches) {
+                channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b>';
+                description.innerHTML = response.items[i].snippet.description + '<br><b>опубликовано:</b> ' + date.toLocaleString("ru", {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                }) + '<br>';
+            }
+            //  breakpoint if < 330px
+            var mq2 = window.matchMedia("(max-width: 330px)");
+            if (mq2.matches) {
+                channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b>';
+                description.innerHTML = '';
+            }
+
 
             linkBlock.appendChild(thumbnail);
             linkBlock.appendChild(title);
@@ -283,6 +304,7 @@ function scrollRight() {
         error.className = "error";
         error.innerHTML = '<br><br><b>Больше ничего не найдено!</b>';
         document.body.appendChild(error);
+        list.scrollLeft = list.scrollWidth - list.clientWidth;
         return;
     }
 
@@ -300,7 +322,7 @@ function scrollRight() {
     // }
 
     // подгрузка новых роликов
-    // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
+    var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
     let countHiddenRightElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth;
     if (countHiddenRightElements < 10) {
         doRequest(request);
@@ -310,19 +332,27 @@ function scrollRight() {
 
 function resize(wrap) {
     wrap.style.width = document.documentElement.clientWidth + 'px';
-    // let elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
+    var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
     let countVisibleElements = Math.floor((wrap.clientWidth - buttonsWidth) / elementWidth);
     let wrapWidth = countVisibleElements * elementWidth + buttonsWidth;
     wrap.style.width = wrapWidth + 'px';
+
+    if ((currentDocumentWidth > 525 && document.documentElement.clientWidth < 525) || (currentDocumentWidth < 525 && document.documentElement.clientWidth > 525) || (currentDocumentWidth < 330 && document.documentElement.clientWidth > 330) || (currentDocumentWidth > 330 && document.documentElement.clientWidth < 330)) {
+        list.scrollLeft = 0;
+        currentPage = 1;
+    }
+
+    currentDocumentWidth = document.documentElement.clientWidth;
     doPagination();
 }
 
 
 function doPagination() {
+    var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
     let countHiddenLeftElements = list.scrollLeft / elementWidth;
     let countVisibleElements = Math.floor((document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth);
     if (countVisibleElements === 0) {
-        return
+        return 0;
     }
     currentPage = Math.ceil(countHiddenLeftElements / countVisibleElements) + 1;
     console.log("visibleElements = " + countVisibleElements);
@@ -422,15 +452,4 @@ function doPagination() {
     // отцентрировать
     var paginationMarginLeft = (document.documentElement.clientWidth - document.getElementsByClassName("pagination")[0].offsetWidth) / 2;
     document.getElementsByClassName("pagination")[0].style.marginLeft = paginationMarginLeft + 'px';
-    //     if(!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])){
-    //         var miss2 = document.createElement('span');
-    //         miss2.className = "miss2";
-    //         miss2.innerHTML = "...";
-    //         document.getElementsByClassName('pagination')[0].insertBefore(miss2, null);
-    //     }
-    // }else {
-    //     if (document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])) {
-    //         document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss2')[0]);
-    //       }
-    // }
 }
