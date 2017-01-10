@@ -114,25 +114,15 @@ function createList(serverResponse) {
     buttonsWidth = leftButton.offsetWidth + rightButton.offsetWidth;
 
     // first page pagination
-    var paginationWrap = document.createElement('div');
-    paginationWrap.style.margin = 'auto';
-    paginationWrap.style.width = '250px';
     var pagination = document.createElement('ul');
     pagination.className = "pagination";
     var firstPage = document.createElement('li');
     firstPage.className = "fa fa-square fa-lg";
     firstPage.classList.add("firstPage");
     firstPage.classList.add("page");
-    firstPage.onclick = function() {
-        list.scrollLeft = 0;
-        currentPage = 1;
-        doPagination();
-    }
-
 
     pagination.appendChild(firstPage);
-    paginationWrap.appendChild(pagination);
-    document.body.appendChild(paginationWrap);
+    document.body.appendChild(pagination);
     currentPage = 1;
 
     //задать начальный размер wrap
@@ -141,7 +131,6 @@ function createList(serverResponse) {
     window.onresize = function() {
         resize(wrap);
     };
-
 
     return list;
 }
@@ -372,7 +361,7 @@ function doPagination() {
         if (pages[i].classList.contains("tooltip")) {
             pages[i].classList.remove("tooltip");
             pages[i].removeChild(pages[i].firstChild);
-            pages[i].onmousedown = function () {}
+            pages[i].onmousedown = function() {}
         }
     }
     console.log(pages);
@@ -429,6 +418,10 @@ function doPagination() {
             pages[i].style.display = 'none';
         }
     }
+
+    // отцентрировать
+    var paginationMarginLeft = (document.documentElement.clientWidth - document.getElementsByClassName("pagination")[0].offsetWidth) / 2;
+    document.getElementsByClassName("pagination")[0].style.marginLeft = paginationMarginLeft + 'px';
     //     if(!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss2')[0])){
     //         var miss2 = document.createElement('span');
     //         miss2.className = "miss2";
