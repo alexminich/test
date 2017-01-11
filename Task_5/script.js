@@ -3,13 +3,9 @@
 
 var nextPageToken = 0;
 var request = "";
-var itemsCount = 0; // зачем?
 var list;
-// var countVisibleElements;
 var currentPage;
 var buttonsWidth;
-// var elementWidth = 260;
-// var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
 var endFlag = 0;
 var currentDocumentWidth = document.documentElement.clientWidth;
 
@@ -33,13 +29,13 @@ function doRequest(request) {
     if (nextPageToken === 0) {
         var params = 'part=' + 'snippet' +
             '&key=' + "AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ" +
-            '&maxResults=' + 15 +
+            '&maxResults=' + 20 +
             '&q=' + request +
             '&type=' + 'video';
     } else {
         var params = 'part=' + 'snippet' +
             '&key=' + "AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ" +
-            '&maxResults=' + 15 +
+            '&maxResults=' + 20 +
             '&q=' + request +
             '&type=' + 'video' +
             '&pageToken=' + nextPageToken;
@@ -125,7 +121,6 @@ function createList(serverResponse) {
 
     pagination.appendChild(firstPage);
     document.body.appendChild(pagination);
-    currentPage = 1;
 
     //задать начальный размер wrap
     resize(wrap);
@@ -141,7 +136,7 @@ function createList(serverResponse) {
 
 // добавляем видео в результаты поиска
 function appendItems(response) {
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i < 20; i++) {
         if (response.items[i] !== undefined) {
             let elem = document.createElement('div'); // element block creation
             elem.className = "resultElem";
@@ -193,9 +188,7 @@ function appendItems(response) {
             var mq2 = window.matchMedia("(max-width: 330px)");
             if (mq2.matches) {
                 channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b>';
-                description.innerHTML = '';
             }
-
 
             linkBlock.appendChild(thumbnail);
             linkBlock.appendChild(title);
@@ -206,7 +199,6 @@ function appendItems(response) {
             elem.appendChild(description);
 
             list.appendChild(elem);
-            itemsCount++;
         } else {
             endFlag = 1;
             return;
@@ -292,24 +284,7 @@ function scrollRight() {
     list.scrollLeft += list.clientWidth;
     doPagination();
 
-    // при достижении конца поискового списка
-    if (list.scrollLeft === list.scrollWidth - list.clientWidth) {
-        if (document.getElementsByClassName('miss2')[0]) {
-            document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss2')[0]);
-        }
-        if (document.getElementsByClassName('page').length > currentPage) {
-            document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('page')[currentPage]);
-        }
-        var error = document.createElement('span');
-        error.className = "error";
-        error.innerHTML = '<br><br><b>Больше ничего не найдено!</b>';
-        document.body.appendChild(error);
-        list.scrollLeft = list.scrollWidth - list.clientWidth;
-        return;
-    }
-
-
-    // анимация скроллинга, глючит при частом листании
+    //  анимация скроллинга, глючит при частом листании
     // var nextPage = list.scrollLeft + list.clientWidth;
     // var animationRight = setInterval(moveRight, 10);
     //
@@ -320,17 +295,22 @@ function scrollRight() {
     //       list.scrollLeft += 10;
     //   }
     // }
+    // doPagination();
 
     // подгрузка новых роликов
     var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
     let countHiddenRightElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth;
-    if (countHiddenRightElements < 10) {
+    if (countHiddenRightElements < 15) {
         doRequest(request);
     }
 }
 
 
 function resize(wrap) {
+    if (document.body.contains(document.getElementsByClassName('error')[0])) {
+        document.body.removeChild(document.getElementsByClassName('error')[0]);
+    }
+
     wrap.style.width = document.documentElement.clientWidth + 'px';
     var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
     let countVisibleElements = Math.floor((wrap.clientWidth - buttonsWidth) / elementWidth);
@@ -340,6 +320,10 @@ function resize(wrap) {
     if ((currentDocumentWidth > 525 && document.documentElement.clientWidth < 525) || (currentDocumentWidth < 525 && document.documentElement.clientWidth > 525) || (currentDocumentWidth < 330 && document.documentElement.clientWidth > 330) || (currentDocumentWidth > 330 && document.documentElement.clientWidth < 330)) {
         list.scrollLeft = 0;
         currentPage = 1;
+    }
+
+    if (list.scrollLeft >= list.scrollWidth - list.clientWidth * 1.5) {
+        list.scrollLeft = list.scrollWidth;
     }
 
     currentDocumentWidth = document.documentElement.clientWidth;
@@ -372,8 +356,8 @@ function doPagination() {
     }
 
     // добавляет новые элементы в пейджинг, если нужно
-    if (!pages[currentPage]) {
-        for (var i = pages.length; i < currentPage + 1; i++) {
+    if (!pages[currentPage + 2]) {
+        for (var i = pages.length; i < currentPage + 3; i++) {
             var newPage = document.createElement('li');
             newPage.className = "fa fa-square-o fa-lg";
             newPage.classList.add("page");
@@ -387,48 +371,71 @@ function doPagination() {
             pages[i].classList.remove("fa-square");
             pages[i].classList.add("fa-square-o");
         }
-        // заодно удалить прошлый тултип
-        if (pages[i].classList.contains("tooltip")) {
-            pages[i].classList.remove("tooltip");
-            pages[i].removeChild(pages[i].firstChild);
-            pages[i].onmousedown = function() {}
-        }
     }
     console.log(pages);
     pages[currentPage - 1].classList.remove("fa-square-o");
     pages[currentPage - 1].classList.add("fa-square");
 
-    // скролл по клику на пейджинг
+    // переход на страницу по клику на ее пэйджинг
+    pages[currentPage].onclick = function() {
+        scrollRight();
+    }
+    pages[currentPage + 1].onclick = function() {
+        scrollRight();
+        scrollRight();
+    }
+    pages[currentPage + 2].onclick = function() {
+        for (var i = 0; i < 3; i++) {
+            scrollRight();
+        }
+    }
+    pages[0].onclick = function() {
+        list.scrollLeft = 0;
+        doPagination();
+    }
     if (currentPage > 2) {
         pages[currentPage - 2].onclick = function() {
             scrollLeft();
         }
-    }
-    pages[currentPage].onclick = function() {
-        scrollRight();
-    }
-    pages[0].onclick = function() {
-        list.scrollLeft = 0;
-        currentPage = 1;
-        doPagination();
+        if (currentPage > 3) {
+            pages[currentPage - 3].onclick = function() {
+                scrollLeft();
+                scrollLeft();
+            }
+            if (currentPage > 4) {
+                pages[currentPage - 4].onclick = function() {
+                    for (var i = 0; i < 3; i++) {
+                        scrollLeft();
+                    }
+                }
+                if (currentPage > 5) {
+                    pages[currentPage - 5].onclick = function() {
+                        for (var i = 0; i < 4; i++) {
+                            scrollLeft();
+                        }
+                    }
+                }
+            }
+        }
     }
     pages[currentPage - 1].onclick = function() {}
 
     // Tooltip adding
-    pages[currentPage - 1].classList.add("tooltip");
-    var tooltipText = document.createElement('span');
-    tooltipText.className = "tooltipText";
-    tooltipText.innerHTML = currentPage;
-    pages[currentPage - 1].appendChild(tooltipText);
-
-    document.getElementsByClassName('tooltip')[0].onmousedown = function() {
-        document.getElementsByClassName('tooltipText')[0].style.visibility = 'visible';
+    for (var i = 0; i < pages.length; i++) {
+        if (!pages[i].childNodes[0]) {
+            pages[i].classList.add("tooltip");
+            var tooltipText = document.createElement('span');
+            tooltipText.className = "tooltipText";
+            tooltipText.innerHTML = i + 1;
+            pages[i].appendChild(tooltipText);
+        }
     }
+
 
     // свертка при большом количестве страниц
     // в начале
-    if (pages.length > 10 && currentPage > 10) {
-        for (var i = 1; i < currentPage - 2; i++) {
+    if (pages.length > 6 && currentPage > 6) {
+        for (var i = 1; i < currentPage - 5; i++) {
             pages[i].style.display = 'none';
         }
         if (!document.getElementsByClassName('pagination')[0].contains(document.getElementsByClassName('miss1')[0])) {
@@ -443,11 +450,41 @@ function doPagination() {
         }
     }
     //  в конце
-    if (pages.length > currentPage + 1) {
-        for (var i = currentPage + 1; i < pages.length; i++) {
+    if (pages.length > currentPage + 3) {
+        for (var i = currentPage + 3; i < pages.length; i++) {
             pages[i].style.display = 'none';
         }
     }
+
+    // при подходе к последней странице не показывать лишние пэйджи
+    if (list.scrollLeft >= list.scrollWidth - list.clientWidth * 4) {
+        if (document.getElementsByClassName('miss2')[0]) {
+            document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('miss2')[0]);
+        }
+        if (list.scrollLeft >= list.scrollWidth - list.clientWidth * 3) {
+            if (document.getElementsByClassName('page').length > currentPage + 2) {
+                for (var i = currentPage + 2; i < document.getElementsByClassName('page').length + 1; i++) {
+                    document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('pagination')[0].lastChild);
+                }
+            }
+            if (list.scrollLeft >= list.scrollWidth - list.clientWidth * 2) {
+                if (document.getElementsByClassName('page').length > currentPage + 1) {
+                    document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('pagination')[0].lastChild);
+                }
+                if (list.scrollLeft === list.scrollWidth - list.clientWidth) {
+                    if (document.getElementsByClassName('page').length > currentPage) {
+                        document.getElementsByClassName('pagination')[0].removeChild(document.getElementsByClassName('pagination')[0].lastChild);
+                    }
+                    var error = document.createElement('span');
+                    error.className = "error";
+                    error.innerHTML = '<br><br><b>Больше ничего не найдено!</b>';
+                    document.body.appendChild(error);
+                    list.scrollLeft = list.scrollWidth - list.clientWidth;
+                }
+            }
+        }
+    }
+
 
     // отцентрировать
     var paginationMarginLeft = (document.documentElement.clientWidth - document.getElementsByClassName("pagination")[0].offsetWidth) / 2;
