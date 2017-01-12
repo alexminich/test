@@ -8,6 +8,7 @@ var currentPage;
 var buttonsWidth;
 var endFlag = 0;
 var currentDocumentWidth = document.documentElement.clientWidth;
+var elementCount = 0;
 
 
 function doSearch() {
@@ -73,6 +74,7 @@ function createList(serverResponse) {
         document.body.removeChild(document.getElementsByClassName('pagination')[0]);
     }
 
+    elementCount = 0;
     var response = JSON.parse(serverResponse);
     console.log(response);
 
@@ -133,9 +135,9 @@ function createList(serverResponse) {
 }
 
 
-
 // добавляем видео в результаты поиска
 function appendItems(response) {
+    var videoIds = '';
     for (var i = 0; i < 20; i++) {
         if (response.items[i] !== undefined) {
             let elem = document.createElement('div'); // element block creation
@@ -164,7 +166,7 @@ function appendItems(response) {
             channel.innerHTML = 'Channel: <b>' + '<a href="https://www.youtube.com/channel/' + response.items[i].snippet.channelId + '" target=_blank>' + response.items[i].snippet.channelTitle + '</a></b><br><br>';
 
             let description = document.createElement('div'); // description and date creation
-            var date = new Date(response.items[i].snippet.publishedAt);
+            let date = new Date(response.items[i].snippet.publishedAt);
             description.className = "description";
             description.innerHTML = response.items[i].snippet.description + '<br><br><b>опубликовано:</b> ' + date.toLocaleString("ru", {
                 year: 'numeric',
@@ -172,7 +174,7 @@ function appendItems(response) {
                 day: 'numeric',
             }) + '<br><br>';
 
-            getStatistics(response.items[i].id.videoId, elem);
+            videoIds += response.items[i].id.videoId + ', ';
 
             //  breakpoint if < 525px
             var mq = window.matchMedia("(max-width: 525px)");
@@ -201,49 +203,56 @@ function appendItems(response) {
             list.appendChild(elem);
         } else {
             endFlag = 1;
-            return;
+            break;
         }
     }
+    getStatistics(videoIds);
 }
 
 
 // получение количества просмотров и лайков
-function getStatistics(videoId, elem) {
+function getStatistics(videoIds) {
     var xhr = new XMLHttpRequest();
 
     var params = 'part=' + 'statistics' +
         '&key=' + "AIzaSyAqDkjeDHD6SK9PN-eun3NZR0Fzws8qgAQ" +
-        '&id=' + videoId;
+        '&id=' + videoIds;
 
     xhr.open('GET', 'https://www.googleapis.com/youtube/v3/videos?' + params, true);
 
     xhr.onload = function() {
         var response = JSON.parse(this.responseText);
-        let statistics = document.createElement('div');
-        statistics.className = "statistics";
-        let watchesIcon = document.createElement('i');
-        watchesIcon.className = "fa fa-eye";
-        let likeIcon = document.createElement('i');
-        likeIcon.className = "fa fa-thumbs-up";
-        let dislikeIcon = document.createElement('i');
-        dislikeIcon.className = "fa fa-thumbs-down";
-
-        statistics.appendChild(watchesIcon);
         var formatter = new Intl.NumberFormat("ru");
-        statistics.innerHTML += ' : <b>' + formatter.format(response.items[0].statistics.viewCount) + '</b><br>';
-        statistics.appendChild(likeIcon);
+        console.log('Results recieved on statistics request = ' + response.items.length);
 
-        // проверка на отключенные лайки\дизлайки
-        if (response.items[0].statistics.likeCount === undefined) {
-            statistics.appendChild(dislikeIcon);
-            statistics.innerHTML += 'отключены :(';
-        } else {
-            statistics.innerHTML += formatter.format(response.items[0].statistics.likeCount) + ' ';
-            statistics.appendChild(dislikeIcon);
-            statistics.innerHTML += formatter.format(response.items[0].statistics.dislikeCount);
+        for (var i = 0; i < response.items.length; i++) {
+            let statistics = document.createElement('div');
+            statistics.className = "statistics";
+            let watchesIcon = document.createElement('i');
+            watchesIcon.className = "fa fa-eye";
+            let likeIcon = document.createElement('i');
+            likeIcon.className = "fa fa-thumbs-up";
+            let dislikeIcon = document.createElement('i');
+            dislikeIcon.className = "fa fa-thumbs-down";
+
+            statistics.appendChild(watchesIcon);
+
+            statistics.innerHTML += ' : <b>' + formatter.format(response.items[i].statistics.viewCount) + '</b><br>';
+            statistics.appendChild(likeIcon);
+
+            // проверка на отключенные лайки\дизлайки
+            if (response.items[i].statistics.likeCount === undefined) {
+                statistics.appendChild(dislikeIcon);
+                statistics.innerHTML += 'отключены :(';
+            } else {
+                statistics.innerHTML += formatter.format(response.items[i].statistics.likeCount) + ' ';
+                statistics.appendChild(dislikeIcon);
+                statistics.innerHTML += formatter.format(response.items[i].statistics.dislikeCount);
+            }
+
+            list.childNodes[elementCount].appendChild(statistics);
+            elementCount++;
         }
-
-        elem.appendChild(statistics);
     }
 
     xhr.onerror = function() {
@@ -372,7 +381,7 @@ function doPagination() {
             pages[i].classList.add("fa-square-o");
         }
     }
-    console.log(pages);
+    // console.log(pages);
     pages[currentPage - 1].classList.remove("fa-square-o");
     pages[currentPage - 1].classList.add("fa-square");
 
