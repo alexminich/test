@@ -130,6 +130,10 @@ function createList(serverResponse) {
     window.onresize = function() {
         resize(wrap);
     };
+    list.onselectstart = function() {
+        return false;
+    };
+    list.addEventListener('mousedown', handleMousedown);
 
     return list;
 }
@@ -261,6 +265,30 @@ function getStatistics(videoIds) {
     }
 
     xhr.send();
+}
+
+
+// свайпы
+var swipeStartX = 0;
+document.addEventListener('mouseup', swipes);
+
+function handleMousedown(event) {
+    swipeStartX = event.clientX;
+}
+
+function swipes(event) {
+    if (swipeStartX !== 0) {
+        var swipeEndX = event.clientX;
+        var diffX = swipeEndX - swipeStartX;
+
+        if (diffX < -100) {
+            scrollRight();
+        } else if (diffX > 100) {
+            scrollLeft();
+        }
+
+        swipeStartX = 0;
+    }
 }
 
 
