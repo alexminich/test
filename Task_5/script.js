@@ -123,6 +123,9 @@ function createList(serverResponse) {
 
     pagination.appendChild(firstPage);
     document.body.appendChild(pagination);
+    pagination.onclick = function(event) {
+        goToPage(event);
+    }
 
     //задать начальный размер wrap
     resize(wrap);
@@ -301,15 +304,16 @@ function scrollLeft() {
     doPagination();
 
     // анимация скроллинга, глючит при частом листании
-    // var prevPage = list.scrollLeft - list.clientWidth;
-    // var animationLeft = setInterval(moveLeft, 1);
-    // function moveLeft() {
-    //   if(list.scrollLeft === prevPage){
-    //       clearInterval(animationLeft);
-    //   } else{
-    //       list.scrollLeft -= 10;
-    //   }
-    // }
+    //     var prevPage = list.scrollLeft - list.clientWidth;
+    //     var animationLeft = setInterval(moveLeft, 4);
+    //     function moveLeft() {
+    //       if(list.scrollLeft === prevPage){
+    //           clearInterval(animationLeft);
+    //           doPagination();
+    //       } else{
+    //           list.scrollLeft -= 10;
+    //       }
+    //     }
 }
 
 
@@ -321,18 +325,32 @@ function scrollRight() {
     list.scrollLeft += list.clientWidth;
     doPagination();
 
+    // еще одна анимация, тоже глючит
+    // var nextPage = list.scrollLeft + list.clientWidth;
+    // function step() {
+    //     list.scrollLeft += 10;
+    //     if(list.scrollLeft < nextPage) {
+    //         var anim = requestAnimationFrame(step);
+    //         // описываем один шаганимации тут
+    //     }
+    // }
+    // step();
+    // doPagination();
+
+
+
     //  анимация скроллинга, глючит при частом листании
     // var nextPage = list.scrollLeft + list.clientWidth;
-    // var animationRight = setInterval(moveRight, 10);
+    // var animationRight = setInterval(moveRight, 4);
     //
     // function moveRight() {
     //   if(list.scrollLeft === nextPage){
     //       clearInterval(animationRight);
+    //       doPagination();
     //   } else{
     //       list.scrollLeft += 10;
     //   }
     // }
-    // doPagination();
 
     // подгрузка новых роликов
     var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
@@ -409,53 +427,9 @@ function doPagination() {
             pages[i].classList.add("fa-square-o");
         }
     }
-    // console.log(pages);
+
     pages[currentPage - 1].classList.remove("fa-square-o");
     pages[currentPage - 1].classList.add("fa-square");
-
-    // переход на страницу по клику на ее пэйджинг
-    pages[currentPage].onclick = function() {
-        scrollRight();
-    }
-    pages[currentPage + 1].onclick = function() {
-        scrollRight();
-        scrollRight();
-    }
-    pages[currentPage + 2].onclick = function() {
-        for (var i = 0; i < 3; i++) {
-            scrollRight();
-        }
-    }
-    pages[0].onclick = function() {
-        list.scrollLeft = 0;
-        doPagination();
-    }
-    if (currentPage > 2) {
-        pages[currentPage - 2].onclick = function() {
-            scrollLeft();
-        }
-        if (currentPage > 3) {
-            pages[currentPage - 3].onclick = function() {
-                scrollLeft();
-                scrollLeft();
-            }
-            if (currentPage > 4) {
-                pages[currentPage - 4].onclick = function() {
-                    for (var i = 0; i < 3; i++) {
-                        scrollLeft();
-                    }
-                }
-                if (currentPage > 5) {
-                    pages[currentPage - 5].onclick = function() {
-                        for (var i = 0; i < 4; i++) {
-                            scrollLeft();
-                        }
-                    }
-                }
-            }
-        }
-    }
-    pages[currentPage - 1].onclick = function() {}
 
     // Tooltip adding
     for (var i = 0; i < pages.length; i++) {
@@ -467,7 +441,6 @@ function doPagination() {
             pages[i].appendChild(tooltipText);
         }
     }
-
 
     // свертка при большом количестве страниц
     // в начале
@@ -522,8 +495,47 @@ function doPagination() {
         }
     }
 
-
     // отцентрировать
     var paginationMarginLeft = (document.documentElement.clientWidth - document.getElementsByClassName("pagination")[0].offsetWidth) / 2;
     document.getElementsByClassName("pagination")[0].style.marginLeft = paginationMarginLeft + 'px';
+}
+
+
+// перелистывание на выбранную страницу в пэйджинге (с использованием делегирования)
+function goToPage(event) {
+    var target = event.target;
+    var page = target.closest('.page');
+    if (!page) {
+        return;
+    }
+    var pressedPageNumber = +target.firstChild.innerHTML;
+    if (!pressedPageNumber) {
+        return;
+    }
+
+    // при нажатии на первую страницу
+    if (pressedPageNumber === 1) {
+        list.scrollLeft = 0;
+        doPagination();
+    }
+
+    var diff = pressedPageNumber - currentPage;
+
+    // если левее текущей страницы
+    for (var i = -4; i < 0; i++) {
+        if (diff === i) {
+            for (var j = 0; j < Math.abs(diff); j++) {
+                scrollLeft();
+            }
+        }
+    }
+
+    // если правее текущей страницы
+    for (var i = 1; i < 4; i++) {
+        if (diff === i) {
+            for (var j = 0; j < diff; j++) {
+                scrollRight();
+            }
+        }
+    }
 }

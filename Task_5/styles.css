@@ -50,11 +50,19 @@ form button:hover {
 }
 
 .wrap {
+  -webkit-transition: visibility 3s;
+  -webkit-transition: right 3s;
+  transition: visibility 3s;
+  transition: right 3s;
     display: flex;
     margin: 20px auto;
 }
 
 .resultList {
+  -webkit-transition: scroll 3s;
+  -webkit-transition: right 3s;
+  transition: scroll 3s;
+  transition: right 3s;
     background-color: #fdf9f0;
     background-color: black;
     display: inline-flex;
@@ -65,6 +73,10 @@ form button:hover {
 }
 
 .resultElem {
+  -webkit-transition: visibility 3s;
+  -webkit-transition: right 3s;
+  transition: visibility 3s;
+  transition: right 3s;
     font-family: Franklin Gothic Medium, Comic Sans MS, Verdana;
     min-width: 250px;
     max-width: 250px;
