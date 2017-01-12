@@ -65,6 +65,7 @@ form button:hover {
 }
 
 .resultElem {
+    font-family: 	Franklin Gothic Medium, Comic Sans MS, Verdana;
     min-width: 250px;
     max-width: 250px;
     height: 540px;
@@ -89,7 +90,12 @@ form button:hover {
     border-radius: 15px;
 }
 
+.channel {
+    font-size: 80%;
+}
+
 .linkBlock:hover {
+    border-radius: 15px;
     background-color: #faf0da;
 }
 
