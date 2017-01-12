@@ -299,21 +299,27 @@ function scrollLeft() {
     if (document.body.contains(document.getElementsByClassName('error')[0])) {
         document.body.removeChild(document.getElementsByClassName('error')[0]);
     }
+    // без анимации
+    // list.scrollLeft -= list.clientWidth;
+    // doPagination();
 
-    list.scrollLeft -= list.clientWidth;
-    doPagination();
+    // анимация скроллинга, глючит при очень быстром листании
+    var prevPage = list.scrollLeft - list.clientWidth;
+    if (prevPage < 0) {
+        list.scrollLeft -= list.clientWidth;
+        doPagination();
+    } else {
+        var animationLeft = setInterval(moveLeft, 4);
 
-    // анимация скроллинга, глючит при частом листании
-    //     var prevPage = list.scrollLeft - list.clientWidth;
-    //     var animationLeft = setInterval(moveLeft, 4);
-    //     function moveLeft() {
-    //       if(list.scrollLeft === prevPage){
-    //           clearInterval(animationLeft);
-    //           doPagination();
-    //       } else{
-    //           list.scrollLeft -= 10;
-    //       }
-    //     }
+        function moveLeft() {
+            if (list.scrollLeft === prevPage) {
+                clearInterval(animationLeft);
+                doPagination();
+            } else {
+                list.scrollLeft -= list.clientWidth / 20;
+            }
+        }
+    }
 }
 
 
@@ -322,8 +328,9 @@ function scrollRight() {
         document.body.removeChild(document.getElementsByClassName('error')[0]);
     }
 
-    list.scrollLeft += list.clientWidth;
-    doPagination();
+    // без анимации
+    // list.scrollLeft += list.clientWidth;
+    // doPagination();
 
     // еще одна анимация, тоже глючит
     // var nextPage = list.scrollLeft + list.clientWidth;
@@ -339,18 +346,23 @@ function scrollRight() {
 
 
 
-    //  анимация скроллинга, глючит при частом листании
-    // var nextPage = list.scrollLeft + list.clientWidth;
-    // var animationRight = setInterval(moveRight, 4);
-    //
-    // function moveRight() {
-    //   if(list.scrollLeft === nextPage){
-    //       clearInterval(animationRight);
-    //       doPagination();
-    //   } else{
-    //       list.scrollLeft += 10;
-    //   }
-    // }
+    //  анимация скроллинга, глючит при очень быстром листании
+    var nextPage = list.scrollLeft + list.clientWidth;
+    if (nextPage > list.scrollWidth - list.clientWidth) {
+        list.scrollLeft += list.clientWidth;
+        doPagination();
+    } else {
+        var animationRight = setInterval(moveRight, 4);
+
+        function moveRight() {
+            if (list.scrollLeft === nextPage) {
+                clearInterval(animationRight);
+                doPagination();
+            } else {
+                list.scrollLeft += list.clientWidth / 20;
+            }
+        }
+    }
 
     // подгрузка новых роликов
     var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
@@ -503,6 +515,11 @@ function doPagination() {
 
 // перелистывание на выбранную страницу в пэйджинге (с использованием делегирования)
 function goToPage(event) {
+    if (document.body.contains(document.getElementsByClassName('error')[0])) {
+        document.body.removeChild(document.getElementsByClassName('error')[0]);
+    }
+
+
     var target = event.target;
     var page = target.closest('.page');
     if (!page) {
@@ -524,8 +541,15 @@ function goToPage(event) {
     // если левее текущей страницы
     for (var i = -4; i < 0; i++) {
         if (diff === i) {
-            for (var j = 0; j < Math.abs(diff); j++) {
+            //without animation on scrollLeft()
+            // for (var j = 0; j < Math.abs(diff); j++) {
+            //     scrollLeft();
+            // }
+            if (Math.abs(diff) === 1) {
                 scrollLeft();
+            } else {
+                list.scrollLeft -= Math.abs(diff) * list.clientWidth;
+                doPagination();
             }
         }
     }
@@ -533,8 +557,18 @@ function goToPage(event) {
     // если правее текущей страницы
     for (var i = 1; i < 4; i++) {
         if (diff === i) {
-            for (var j = 0; j < diff; j++) {
+            if (diff === 1) {
                 scrollRight();
+            } else {
+                list.scrollLeft += diff * list.clientWidth;
+                doPagination();
+
+                // подгрузка
+                var elementWidth = document.getElementsByClassName('resultElem')[0].offsetWidth;
+                let countHiddenRightElements = (list.scrollWidth - list.scrollLeft - document.getElementsByClassName('wrap')[0].clientWidth - buttonsWidth) / elementWidth;
+                if (countHiddenRightElements < 15) {
+                    doRequest(request);
+                }
             }
         }
     }
